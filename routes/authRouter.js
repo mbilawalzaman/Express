@@ -3,7 +3,7 @@ const router = require("express").Router();
 
 router.get("/login", authController.login);
 router.post("/logout", authController.logout);
-router.get("/signUp", authController.signUp);
+router.post("/signUp", authController.signUp);
 router.get("/forgotPassword", authController.forgotPassword);
 router.get("/resetPassword", authController.resetPassword);
 

@@ -18,7 +18,7 @@ module.exports = {
                 };
             }
         },
-        logout: (body) => {
+        logout: async (body) => {
             try {
                 let result 
                 const num = (body.number)%2
@@ -30,7 +30,7 @@ module.exports = {
                     result = "odd"
                     console.log("number is odd")
                 }
-                const logoutResponse = authModel.logout();
+                const logoutResponse = await authModel.logout();
                 if (logoutResponse.error){
                     return {
                         error: logoutResponse.error,
@@ -49,9 +49,11 @@ module.exports = {
                     };
                 }
             },
-            signUp: () => {
+            signUp: async(body) => {
                 try {
-                    const signUpResponse = authModel.signUp();
+                    delete body.confirmPassword;
+                    body.password = await bcryptjs.hash(body.password,10)
+                    const signUpResponse = await authModel.signUp();
                     if (signUpResponse.error){
                         return {
                             error: signUpResponse.error,

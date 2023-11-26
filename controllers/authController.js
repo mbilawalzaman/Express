@@ -42,16 +42,17 @@ module.exports ={
             });
         }
     },
-    signUp : (req, res) => {
+    signUp : async (req, res) => {
         try{
-            const signupResponse = authService.signUp();
-            if(signupResponse.error){
+            const validate = await signUpSchema.validateAsync(req.body);
+            const signUpResponse = await authService.signUp(validate);
+            if(signUpResponse.error){
                 res.send({
-                    error: signupResponse.error,
+                    error: signUpResponse.error,
                 });
             }
             res.send({
-                response: signupResponse.response,
+                response: signUpResponse.response,
             });
         }
         catch(error){
