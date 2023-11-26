@@ -51,9 +51,9 @@ module.exports = {
             },
             signUp: async(body) => {
                 try {
-                    delete body.confirmPassword;
-                    body.password = await bcryptjs.hash(body.password,10)
-                    const signUpResponse = await authModel.signUp();
+                    // delete body.confirmPassword;
+                    // body.password = await bcryptjs.hash(body.password,10)
+                    const signUpResponse = await authModel.signUp(body);
                     if (signUpResponse.error){
                         return {
                             error: signUpResponse.error,

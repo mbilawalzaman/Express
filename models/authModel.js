@@ -22,10 +22,10 @@ module.exports = {
         };
       }
       },
-      signUp: () => {
+      signUp: (body) => {
         try{
           return {
-              response: "You are Siggned up",
+              response:body,
           }
         }catch (error){
           return {

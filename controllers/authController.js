@@ -1,5 +1,9 @@
 const authService = require("../services/authService");
+const joi=require("joi");
 
+const signUpSchema=joi.object().keys({
+email:joi.string().required().email().min(3).max(30),
+})
 
 module.exports ={
     login : (req, res) => {
