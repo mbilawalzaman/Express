@@ -1,21 +1,34 @@
 const authService = require("../services/authService");
 const joi=require("joi");
+const bcryptjs=require("bcryptjs");
+const Joi = require("joi");
+
+const loginSchema=joi.object().keys({
+    email: joi.string().required().email().min(3).max(60),
+    password: joi.string().required()
+    .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+})
 
 const signUpSchema=joi.object().keys({
 email:joi.string().required().email().min(3).max(30),
+password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+repeat_password: joi.ref('password')
 })
 
 module.exports ={
-    login : (req, res) => {
+    login : async(req, res) => {
         try{
-            const loginResponse = authService.login();
+            const validate = await loginSchema.validateAsync(req.body);
+            const loginResponse = authService.login(validate);
             if(loginResponse.error){
                 res.send({
                     error: loginResponse.error,
                 });
             }
+            console.log(req.body)
             res.send({
                 response: loginResponse.response,
+                body: req.body
             });
         }
         catch(error){

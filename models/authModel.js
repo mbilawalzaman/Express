@@ -11,7 +11,7 @@ module.exports = {
       };
     }
     },
-    logout: () => {
+    logout: (body) => {
         try{
           return {
               response: "You are logged out",
