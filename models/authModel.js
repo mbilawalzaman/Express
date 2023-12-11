@@ -20,28 +20,28 @@ module.exports = {
     }
     },
     logout: async (email) => {
-      try {
-        // Assuming you have a User model with a field like "isLoggedIn"
-        const user = await models.Users.findOne({ where: { email } });
-  
-        if (user) {
-          // Update the user's status to indicate they are logged out
-          await models.Users.update({ getUserByEmail: false }, { where: { email } });
-  
-          return {
-            response: `User with email ${email} is logged out`,
-          };
-        } else {
-          return {
-            error: `User with email ${email} not found`,
-          };
-        }
-      } catch (error) {
+    try {
+      // Check if the user is logged in before updating the status
+      const isLoggedInResult = await userModel.isLoggedIn(email);
+
+      if (isLoggedInResult.response) {
+        // User is logged in, proceed with logout
+        await models.Users.update({ isLoggedIn: false }, { where: { email } });
+
         return {
-          error: error,
+          response: `User with email ${email} is logged out`,
+        };
+      } else {
+        return {
+          error: `User with email ${email} is not logged in`,
         };
       }
-    },
+    } catch (error) {
+      return {
+        error: error,
+      };
+    }
+  },
       signUp: (body) => {
         try{
           return {
