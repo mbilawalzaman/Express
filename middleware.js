@@ -12,6 +12,7 @@ module.exports = {
               error: "unauthorized User",
             });
           }
+
           jwt.verify(token, config.jwt.secret, async (error, user,) => {
             if (error) {
               return res.send({
