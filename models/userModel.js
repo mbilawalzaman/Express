@@ -113,4 +113,29 @@ module.exports = {
         
       }
       },
+isLoggedIn: async (email) => {
+    try {
+      const user = await models.Users.findOne({
+        where: {
+          email: email,
+          isLoggedIn: true, // Check if the user is currently logged in
+        },
+        attributes: ['isLoggedIn'],
+      });
+
+      if (user) {
+        return {
+          response: true, // User is logged in
+        };
+      } else {
+        return {
+          response: false, // User is not logged in
+        };
+      }
+    } catch (error) {
+      return {
+        error: error,
+      };
+    }
+  },
 }
