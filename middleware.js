@@ -102,25 +102,25 @@ logout: async (req, res, next) => {
       const token = req.cookies.auth;
 
       if (!token || token === undefined) {
-        return res.status(401).json({ error: "Unauthorized User" });
+        return res.json({ error: "Unauthorized User" });
       }
 
       jwt.verify(token, config.jwt.secret, async (error, user) => {
         if (error) {
-          return res.status(401).json({ error: "Unauthorized User" });
+          return res.json({ error: "Unauthorized User" });
         }
 
         // Your logout logic here, e.g., invalidate the session
         const deleteSession = await sessionModel.deleteSession(user.userId);
 
         if (deleteSession.error) {
-          return res.status(500).json({ error: "Internal Server Error" });
+          return res.json({ error: "Internal Server Error" });
         }
 
         return res.json({ response: "Logout successful" });
       });
     } catch (error) {
-      return res.status(500).json({ error: "Internal Server Error" });
+      return res.json({ error: "Internal Server Error" });
     }
   },
 };
