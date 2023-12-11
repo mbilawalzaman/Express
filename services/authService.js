@@ -129,4 +129,28 @@ module.exports = {
                                 };
                             }
                         },
+    logout: async (email) => {
+    try {
+      // Check if the user is logged in before updating the status
+      const isLoggedInResult = await userModel.isLoggedIn(email);
+
+      if (isLoggedInResult.response) {
+        // User is logged in, proceed with logout
+        await models.Users.update({ isLoggedIn: false }, { where: { email } });
+
+        return {
+          response: `User with email ${email} is logged out`,
+        };
+      } else {
+        return {
+          error: `User with email ${email} is not logged in`,
+        };
+      }
+    } catch (error) {
+      return {
+        error: error,
+      };
+    }
+  },
+    
     }
