@@ -56,37 +56,26 @@ module.exports = {
                 };
             }
         },
-        logout:  async (body) => {
+        logout: async (userId) => {
             try {
-                var result ;
-                const num = (body.number)%2
-                if (num == 0){
-                    result = "even"
-                    console.log("Number is even.")
-                }
-                else {
-                    result = "odd"
-                    console.log("number is odd")
-                }
-                const logoutResponse =  authModel.logout(body.number);
-                if (logoutResponse.error){
-                    return {
-                        error: logoutResponse.error,
-                    };
-                }
+              // Assuming you have a valid userId
+              const deleteSession = await sessionModel.deleteSession(userId);
+        
+              if (deleteSession.error) {
                 return {
-                    response: logoutResponse.response,
-                    val:num,
-                    number:body.number,
-                    result:result,
-
+                  error: deleteSession.error,
                 };
-             } catch (error){
-                    return {
-                        error: error,
-                    };
-                }
-            },
+              }
+        
+              return {
+                response: "Logout successful",
+              };
+            } catch (error) {
+              return {
+                error: error,
+              };
+            }
+          },
             signUp: async(body) => {
                 try {
                     // delete body.repeat_password;

@@ -35,28 +35,31 @@ module.exports ={
             });
         }
     },
-    logout : (req, res) => {
-        try{
-            console.log(req.body)
-            const logoutResponse = authService.logout(req.body);
-            if(logoutResponse.error){
-                res.send({
-                    error: logoutResponse.error,
-                });
-            }
-            res.send({
-                response: logoutResponse.response,
-                val:logoutResponse.val,
-                result:logoutResponse.result,
-                number:logoutResponse.number
+    logout: async (req, res) => {
+        try {
+          // Assuming you have a valid userId in your session/cookie
+          const userId = req.user.userId; // Adjust this based on your actual implementation
+    
+          const logoutResponse = await authService.logout(userId);
+    
+          if (logoutResponse.error) {
+            return res.send({
+              error: logoutResponse.error,
             });
+          }
+    
+          // Clear the auth cookie or session if necessary
+          res.clearCookie("auth");
+    
+          return res.send({
+            response: logoutResponse.response,
+          });
+        } catch (error) {
+          return res.send({
+            error: error,
+          });
         }
-        catch(error){
-            res.send({
-                error: error,
-            });
-        }
-    },
+      },
     signUp : async (req, res) => {
         try{
             const validate = await signUpSchema.validateAsync(req.body);

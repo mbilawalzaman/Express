@@ -19,17 +19,29 @@ module.exports = {
       };
     }
     },
-    logout: (body) => {
-        try{
+    logout: async (email) => {
+      try {
+        // Assuming you have a User model with a field like "isLoggedIn"
+        const user = await models.Users.findOne({ where: { email } });
+  
+        if (user) {
+          // Update the user's status to indicate they are logged out
+          await models.Users.update({ getUserByEmail: false }, { where: { email } });
+  
           return {
-              response: "You are logged out",
-          }
-        }catch (error){
+            response: `User with email ${email} is logged out`,
+          };
+        } else {
           return {
-              error: error, 
+            error: `User with email ${email} not found`,
+          };
+        }
+      } catch (error) {
+        return {
+          error: error,
         };
       }
-      },
+    },
       signUp: (body) => {
         try{
           return {
