@@ -1,9 +1,17 @@
+const {models} = require ("./index");
+
 module.exports = {
-    login: () => {
+    login: async (email) => {
       try{
-        
+        const user = await models.Users.findOne({
+          where:{
+            email:email,
+          },attributes: {
+            exclude: ["createdAt", "updatedAt", "deletedAt"],
+          }
+        });
         return {
-            response: "You are logged in",
+            response: user,
         }
       }catch (error){
         return {

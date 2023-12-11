@@ -1,94 +1,117 @@
 const userService = require("../services/userService");
+const joi = require("joi");
 
-module.exports ={
-    createUser : (req, res) => {
-        try{
-            const createUserResponse = userService.createUser();
-            if(createUserResponse.error){
-                res.send({
-                    error: createUserResponse.error,
-                });
-            }
-            res.send({
-                response: createUserResponse.response,
-            });
+
+const createUserSchema = joi.object().keys({
+  firstName: joi.string().required().min(3).max(40),
+  lastName: joi.string().required().min(3).max(40),
+  email: joi.string().required().email(),
+  password: joi.string().required().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+  confirmPassword: joi.ref("password"),
+  role: joi.string().valid("instructor", "trainee"),
+});
+
+const getByUserIdSchema = joi.object().keys({
+  userId: joi.string().required(),
+})
+
+const updateUserSchema = joi.object().keys({
+  userId: joi.string().required(),
+  firstName: joi.string().required().min(3).max(40),
+  lastName: joi.string().required().min(3).max(40),
+  email: joi.string().required().email(),
+  role: joi.string().valid("instructor", "trainee"),
+})
+
+const paginationSchema = joi.object().keys({
+  pageNo: joi.number().required().greater(0),
+  limit: joi.number().valid(5, 10),
+  firstName: joi.string(),
+  lastName: joi.string(),
+  email: joi.string(),
+  role: joi.string(),
+  sortValue: joi
+    .string()
+    .valid("userId", "email", "role", "firstName", "lastName"),
+  sortOrder: joi.valid("ASC", "DESC"),
+});
+
+
+module.exports = {
+  createUser: async (req, res) => {
+    try {
+        const validate = await createUserSchema.validateAsync(req.body);
+        const user = await userService.createUser(validate);
+        if (user.error) {
+            return res.send({
+                error: user.error,
+            })
         }
-        catch(error){
-            res.send({
-                error: error,
-            });
-        }
-    },
-    getAllUser : (req, res) => {
-        try{
-            const getAllUserResponse = userService.getAllUser();
-            if(getAllUserResponse.error){
-                res.send({
-                    error: getAllUserResponse.error,
-                });
-            }
-            res.send({
-                response: getAllUserResponse.response,
-            });
-        }
-        catch(error){
-            res.send({
-                error: error,
-            });
-        }
-    },
-    deleteUser : (req, res) => {
-        try{
-            const deleteUserResponse = userService.deleteUser();
-            if(deleteUserResponse.error){
-                res.send({
-                    error: deleteUserResponse.error,
-                });
-            }
-            res.send({
-                response: deleteUserResponse.response,
-            });
-        }
-        catch(error){
-            res.send({
-                error: error,
-            });
-        }
-    },
-    blockUser : (req, res) => {
-        try{
-            const blockUserResponse = userService.blockUser();
-            if(blockUserResponse.error){
-                res.send({
-                    error: blockUserResponse.error,
-                });
-            }
-            res.send({
-                response: blockUserResponse.response,
-            });
-        }
-        catch(error){
-            res.send({
-                error: error,
-            });
-        }
-    },
-    updateUser : (req, res) => {
-        try{
-            const updateUserResponse = userService.updateUser();
-            if(updateUserResponse.error){
-                res.send({
-                    error: updateUserResponse.error,
-                });
-            }
-            res.send({
-                response: updateUserResponse.response,
-            });
-        }
-        catch(error){
-            res.send({
-                error: error,
-            });
-        }
-    },
+        return res.send({
+            response: user.response,
+        });
+
+    }
+    catch (error) {
+        return res.send({
+            error: error
+        });
+    };
+},
+  getAllUser: async (req, res) => {
+  try {
+    const validate = await paginationSchema.validateAsync(req.query);
+      const users = await userService.getAllUsers(validate);
+    if (users.error) {
+      return res.send({
+        error: users.error,
+      });
+    }
+    return res.send({
+      response: users.response,
+    });
+  } catch (error) {
+    return res.send({
+      error: error,
+    });
+  }},
+  deleteUser: async (req, res) => {
+  try {
+      const validate = await getByUserIdSchema.validateAsync(req.query);
+      const user = await userService.deleteUser(validate);
+    if(user.error){
+      return res.send({
+        error: user.error
+      });
+    }
+    return res.send({
+      response: user.response
+    })
+    
+  } catch (error) {
+    return res.send({
+      error: error
+    });
+  }
+  
+  },
+  updateUser: async (req, res) => {
+    try {
+      const validate = await updateUserSchema.validateAsync(req.body);
+      const user = await userService.updateUser(validate);
+      if (user.error) {
+        return res.send({
+          error: user.error
+        });
+      }
+      return res.send({
+        response: user.response,
+      });
+    } catch (error) {
+      return res.send({
+        error: error,
+      });
+    }
+  }
+  
 }

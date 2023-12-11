@@ -1,89 +1,103 @@
 const userModel = require("../models/userModel");
+const {v4: uuidv4}=require("uuid");
+const bcrypt = require ("bcryptjs");
+
 
 module.exports = {
-    createUser: () => {
-        try {
-            const createUserResponse = userModel.createUser();
-            if (createUserResponse.error){
-                return {
-                    error: createUserResponse.error,
-                };
-            }
+  createUser: async (body) => {
+    try {
+        const userId = uuidv4();
+        const isUser = await userModel.getUserByEmail(body.email);
+
+        if (isUser.response || isUser.error) {
             return {
-                response: createUserResponse.response,
-            };
-         } catch (error){
-                return {
-                    error: error,
-                };
+                error: "email already exists",
             }
-        },
-        getAllUser: () => {
-            try {
-                const getAllUserResponse = userModel.getAllUser();
-                if (getAllUserResponse.error){
-                    return {
-                        error: getAllUserResponse.error,
-                    };
-                }
-                return {
-                    response: getAllUserResponse.response,
-                };
-             } catch (error){
-                    return {
-                        error: error,
-                    };
-                }
-            },
-            deleteUser: () => {
-                try {
-                    const deleteUserResponse = userModel.deleteUser();
-                    if (deleteUserResponse.error){
-                        return {
-                            error: deleteUserResponse.error,
-                        };
-                    }
-                    return {
-                        response: deleteUserResponse.response,
-                    };
-                 } catch (error){
-                        return {
-                            error: error,
-                        };
-                    }
-                },
-                blockUser: () => {
-                    try {
-                        const blockUserResponse = userModel.blockUser();
-                        if (blockUserResponse.error){
-                            return {
-                                error: blockUserResponse.error,
-                            };
-                        }
-                        return {
-                            response: blockUserResponse.response,
-                        };
-                     } catch (error){
-                            return {
-                                error: error,
-                            };
-                        }
-                    },
-                    updateUser: () => {
-                        try {
-                            const updateUserResponse = userModel.updateUser();
-                            if (updateUserResponse.error){
-                                return {
-                                    error: updateUserResponse.error,
-                                };
-                            }
-                            return {
-                                response: updateUserResponse.response,
-                            };
-                         } catch (error){
-                                return {
-                                    error: error,
-                                };
-                            }
-                        },
+        }
+
+        delete body.confirmPassword;
+        body.password = await bcrypt.hash(body.password, 10);
+        const user = await userModel.createUser(body, userId);
+
+        if (user.error) {
+            return {
+                error: user.error,
+            }
+        }
+        delete user.response.dataValues.password;
+        return {
+            response: user.response,
+        }
+
+
     }
+
+    catch (error) {
+        return {
+            error: error,
+        };
+    }
+},
+  getAllUsers: async (query) => {
+    try {
+      const offset = (query.pageNo-1)*query.limit;
+      const users = await userModel.getAllUsers(offset, query);
+      if (users.error) {
+        return {
+          error: users.error,
+        };
+      }
+
+      return {
+        response: users.response,
+      };
+    } catch (error) {
+      return {
+        error: error,
+      };
+    }
+  },
+  deleteUser: async (query) => {
+  try {
+    const user = await userModel.deleteUser(query);
+    if (user.error){
+      return{
+        error: user.error
+      };
+      }
+      return{
+        response:user.response
+      }
+    
+  } catch (error) {
+    return{
+      error: error,
+    }
+  }
+  },
+  updateUser: async (body) => {
+    try {
+      const isUser = await userModel.getUserByEmail(body.email);
+      if(!isUser.response || isUser.error){
+        return{
+          error: "user does not exists"
+        }
+      }
+      const user = await userModel.updateUser(body);
+      if (user.error) {
+        return {
+            error: user.error,
+        }
+    }
+    return {
+        response: user.response,
+    }
+      
+    } catch (error) {
+      return {
+        error:error,
+      };
+    }
+  }
+  
+};

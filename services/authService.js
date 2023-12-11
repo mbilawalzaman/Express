@@ -1,16 +1,54 @@
 const authModel = require("../models/authModel");
+const jwt = require("jsonwebtoken")
+const config = require("../config.json")
+const bcrypt=require("bcryptjs")
+const {v4: uuidV4}=require("uuid");
+const sessionModel = require("../models/sessionModel");
 
 module.exports = {
-    login: () => {
+    login: async (body) => {
         try {
-            const loginResponse = authModel.login();
-            if (loginResponse.error){
+            const user = await authModel.login(body.email);
+            if (user.error || !user.response){
                 return {
-                    error: loginResponse.error,
+                    error: "invalid credentials",
                 };
             }
+            const login = await bcrypt.compare(
+                body.password,
+                user.response.dataValues.password
+            );
+            if(!login){
+                return{
+                    error: "invalid credentials",
+                };
+            }
+            const token = jwt.sign(user.response.dataValues, config.jwt.secret, {
+                expiresIn: "1h"
+            })
+            const session = await sessionModel.getSessionByUserId(user.response.dataValues.userId)
+            // if(session.error) {return {error: error "invalid user"}
+            const userId =  user.response.dataValues.userId
+            const deleteSession = await sessionModel.deleteSession(userId)
+            if(deleteSession.error){
+                return {
+                    error: error
+                }}
+                delete user.response.dataValues.password;
+
+                const sessionId = uuidV4();
+
+                const createSession = await sessionModel.createSession(
+                sessionId,
+                userId,
+                token)
+      if(createSession.error || !createSession.response){
+        return { error: 'invalid user 234'}
+      }
+
+           
             return {
-                response: loginResponse.response,
+                response: token,
             };
          } catch (error){
                 return {
@@ -18,7 +56,7 @@ module.exports = {
                 };
             }
         },
-        logout:  (body) => {
+        logout:  async (body) => {
             try {
                 var result ;
                 const num = (body.number)%2

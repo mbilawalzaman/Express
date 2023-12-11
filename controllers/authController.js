@@ -1,7 +1,5 @@
 const authService = require("../services/authService");
 const joi=require("joi");
-const bcryptjs=require("bcryptjs");
-const Joi = require("joi");
 
 const loginSchema=joi.object().keys({
     email: joi.string().required().email().min(3).max(60),
@@ -19,20 +17,20 @@ module.exports ={
     login : async(req, res) => {
         try{
             const validate = await loginSchema.validateAsync(req.body);
-            const loginResponse = authService.login(validate);
+            const loginResponse = await authService.login(validate);
             if(loginResponse.error){
-                res.send({
+               return res.send({
                     error: loginResponse.error,
                 });
             }
-            console.log(req.body)
-            res.send({
+            
+            res.cookie("auth", loginResponse.response);
+            return res.send({
                 response: loginResponse.response,
-                body: req.body
-            });
+            });        
         }
         catch(error){
-            res.send({
+            return res.send({
                 error: error,
             });
         }

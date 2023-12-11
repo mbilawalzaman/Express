@@ -13,7 +13,11 @@
     "http-errors": "~1.6.3",
     "jade": "^0.29.0",
     "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "~1.9.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "pg": "^8.11.3",
+    "sequelize": "^6.35.1",
+    "uuid": "^9.0.1"
   }
 }
