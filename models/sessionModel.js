@@ -66,7 +66,7 @@ getSession: async (userId, token) => {
           }
         });
         return{
-          response: user
+          response: session
         }
         } catch (error) {
       

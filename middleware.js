@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const config = require("./config.json")
-const {getSession} = require ("./models/sessionModel")
+const sessionModel = require("./models/sessionModel");
 
 
 module.exports = {
@@ -60,5 +60,38 @@ module.exports = {
           });
         }
       },
-      
+      auth : async (req, res, next) => {
+          try {
+  
+              const token  = req.cookies.auth;
+  
+              if(!token || token === undefined){
+                  return res.send({
+                      error:"unauthorized User",
+                  });
+              }
+  
+              jwt.verify(token, config.jwt.secret, async (error, user)=>{
+  
+                  const session =  await sessionModel.getSessionByUserId(user.userId);
+                  console.log('--------------',session)
+                  if(session.response){
+                      return res.send({
+                          error:"already logged in "
+                      })
+                  }
+                  if(error){
+                      return res.send({
+                          error:error,
+                      });
+                  }
+                  console.log("data",user);
+                  next();
+              });
+  
+          } catch (error) {
+              return res.send({
+                  error:"unauthorized User",
+              });
+            }}
 };
