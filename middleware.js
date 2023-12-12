@@ -102,7 +102,7 @@ logout: async (req, res, next) => {
         return res.json({ error: "Unauthorized User" });
       }
 
-      // Your logout logic here, e.g., invalidate the session
+      // logout logic here to validate
       const deleteSession = await sessionModel.deleteSession(user.userId);
 
       if (deleteSession.error) {
