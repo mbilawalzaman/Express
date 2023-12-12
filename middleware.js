@@ -61,42 +61,34 @@ module.exports = {
           });
         }
       },
-      auth : async (req, res, next) => {
-          try {
-  
-              const token  = req.cookies.auth;
-              
-              if(!token || token === undefined){
-                  return res.send({
-                      error:"unauthorized User",
-                  });
-              }
-  
-              jwt.verify(token, config.jwt.secret, async (error, user)=>{
-  
-                  if(user){
-                    const session =  await sessionModel.getSessionByUserId(user.userId);
-                    if(session.response){
-                      return res.send({
-                          error:"already signed in "
-                      })
-                  }
-                  }
+      auth: async (req, res, next) => {
+  try {
+    const token = req.cookies.auth;
 
-                  // if(error){
-                  //     return res.send({
-                  //         error:error,
-                  //     });
-                  // }
-                  console.log("data",user);
-                  next();
-              });
-  
-          } catch (error) {
-              return res.send({
-                  error:"unauthorized User",
-              });
-            }},
+    if (token) {
+      jwt.verify(token, config.jwt.secret, async (error, user) => {
+        if (user) {
+          const session = await sessionModel.getSessionByUserId(user.userId);
+
+          if (session.response) {
+            return res.json({
+              error: "already signed in ",
+            });
+          }
+        }
+        next();
+      });
+    } else {
+      
+      next();
+    }
+  } catch (error) {
+    return res.json({
+      error: "unauthorized User",
+    });
+  }
+},
+
 logout: async (req, res, next) => {
     try {
       const token = req.cookies.auth;
