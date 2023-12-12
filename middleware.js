@@ -90,29 +90,32 @@ module.exports = {
 },
 
 logout: async (req, res, next) => {
-    try {
-      const token = req.cookies.auth;
+  try {
+    const token = req.cookies.auth;
 
-      if (!token || token === undefined) {
+    if (!token || token === undefined) {
+      return res.json({ error: "Unauthorized User" });
+    }
+
+    jwt.verify(token, config.jwt.secret, async (error, user) => {
+      if (error) {
         return res.json({ error: "Unauthorized User" });
       }
 
-      jwt.verify(token, config.jwt.secret, async (error, user) => {
-        if (error) {
-          return res.json({ error: "Unauthorized User" });
-        }
+      // Your logout logic here, e.g., invalidate the session
+      const deleteSession = await sessionModel.deleteSession(user.userId);
 
-        // Your logout logic here, e.g., invalidate the session
-        const deleteSession = await sessionModel.deleteSession(user.userId);
+      if (deleteSession.error) {
+        return res.json({ error: "Internal Server Error" });
+      }
 
-        if (deleteSession.error) {
-          return res.json({ error: "Internal Server Error" });
-        }
+      // Clear client-side cookie
+      res.clearCookie("auth");
 
-        return res.json({ response: "Logout successful" });
-      });
-    } catch (error) {
-      return res.json({ error: "Internal Server Error" });
-    }
-  },
+      return res.json({ response: "Logout successful" });
+    });
+  } catch (error) {
+    return res.json({ error: "Internal Server Error" });
+  }
+},
 };
