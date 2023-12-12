@@ -65,7 +65,7 @@ module.exports = {
           try {
   
               const token  = req.cookies.auth;
-  
+              
               if(!token || token === undefined){
                   return res.send({
                       error:"unauthorized User",
@@ -96,7 +96,7 @@ module.exports = {
               return res.send({
                   error:"unauthorized User",
               });
-            }};
+            }},
 logout: async (req, res, next) => {
     try {
       const token = req.cookies.auth;
