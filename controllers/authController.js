@@ -37,9 +37,7 @@ module.exports ={
     },
     logout: async (req, res) => {
         try {
-          // Assuming you have a valid userId in your session/cookie
-          const userId = req.user.userId; // Adjust this based on your actual implementation
-    
+          const userId = req.user.userId;    
           const logoutResponse = await authService.logout(userId);
     
           if (logoutResponse.error) {
@@ -47,8 +45,6 @@ module.exports ={
               error: logoutResponse.error,
             });
           }
-    
-          // Clear the auth cookie or session if necessary
           res.clearCookie("auth");
     
           return res.send({
