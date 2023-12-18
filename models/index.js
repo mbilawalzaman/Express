@@ -33,7 +33,6 @@ Tasks.belongsTo(TeamMembers, {foreignKey: "TasksId"});
 Users.hasMany(TeamMembers, { foreignKey: "UsersId" });
 TeamMembers.belongsTo(Users, { foreignKey: "UsersId" });
 
-
 //TeamMember-teams one-to-many
 Teams.hasMany(TeamMembers , {foreignKey: "TeamsId"});
 TeamMembers.belongsTo(Teams, {foreignKey: "TeamId"});

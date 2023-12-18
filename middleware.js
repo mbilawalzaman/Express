@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const config = require("./config.json")
+const config = require("./config/config.json")
 const getSession = require ("./models/sessionModel");
 const sessionModel = require("./models/sessionModel");
 
@@ -79,16 +79,42 @@ module.exports = {
         next();
       });
     } else {
-      
       next();
     }
   } catch (error) {
-    return res.json({
+    return res.send({
       error: "unauthorized User",
     });
   }
 },
+admin: async (req, res, next) => {
+  try {
+    const token = req.cookies.auth;
+    if (!token || token == undefined) {
+      return res.send({
+        error: "unauthorizedddd User",
+      });
+    }
 
+    jwt.verify(token, config.jwt.secret, async (error, user) => {
+      if (error) {
+        return res.send({
+          error: error,
+        });
+      }
+        if (user.role !== "admin") {
+        return res.send({
+          error: "unauthorizeddd User",
+        });
+      }
+      next();
+    });
+  } catch (error) {
+    return res.send({
+      error: "unauthorizedddd User",
+    });
+  }
+},
 logout: async (req, res, next) => {
   try {
     const token = req.cookies.auth;

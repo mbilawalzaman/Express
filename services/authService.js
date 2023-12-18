@@ -1,6 +1,6 @@
 const authModel = require("../models/authModel");
 const jwt = require("jsonwebtoken")
-const config = require("../config.json")
+const config = require("../config/config.json")
 const bcrypt=require("bcryptjs")
 const {v4: uuidV4}=require("uuid");
 const sessionModel = require("../models/sessionModel");

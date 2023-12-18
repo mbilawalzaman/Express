@@ -29,7 +29,7 @@ Users.init(
     role: {
       allowNull: false,
       type: DataTypes.ENUM,
-    values: ['instructor', 'trainee']
+    values: ['instructor', 'trainee', 'admin']
     },
   },
   {

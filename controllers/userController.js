@@ -8,7 +8,7 @@ const createUserSchema = joi.object().keys({
   email: joi.string().required().email(),
   password: joi.string().required().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
   confirmPassword: joi.ref("password"),
-  role: joi.string().valid("instructor", "trainee"),
+  role: joi.string().valid("instructor", "trainee", "admin"),
 });
 
 const getByUserIdSchema = joi.object().keys({
@@ -20,7 +20,7 @@ const updateUserSchema = joi.object().keys({
   firstName: joi.string().required().min(3).max(40),
   lastName: joi.string().required().min(3).max(40),
   email: joi.string().required().email(),
-  role: joi.string().valid("instructor", "trainee"),
+  role: joi.string().valid("instructor", "trainee", "admin"),
 })
 
 const paginationSchema = joi.object().keys({
