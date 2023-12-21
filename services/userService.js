@@ -9,6 +9,7 @@ module.exports = {
         const userId = uuidv4();
         const isUser = await userModel.getUserByEmail(body.email);
 
+        
         if (isUser.response || isUser.error) {
             return {
                 error: "email already exists",
